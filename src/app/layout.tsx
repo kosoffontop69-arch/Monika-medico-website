@@ -3,6 +3,7 @@ import './globals.css'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 import { Toaster } from 'react-hot-toast'
+import { AuthProvider } from '@/components/auth/AuthProvider'
 
 export const metadata: Metadata = {
   title: 'Monika Medico Pvt. Ltd. — Wholesale Medicine Distributors',
@@ -23,6 +24,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+        <AuthProvider>
         <Navbar />
         <main>{children}</main>
         <Footer />
@@ -44,6 +46,7 @@ export default function RootLayout({
             }
           }}
         />
+        </AuthProvider>
       </body>
     </html>
   )
