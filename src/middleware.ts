@@ -1,22 +1,46 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { createServerClient } from '@supabase/ssr'
 
-export function middleware(request: NextRequest) {
-  // Skip admin routes and API routes
+export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname
-  if (path.startsWith('/admin') || path.startsWith('/api')) {
+
+  // Skip static files
+  if (path.startsWith('/_next') || path.startsWith('/favicon')) {
     return NextResponse.next()
   }
 
-  // Check maintenance mode cookie (set by admin)
-  const maintenance = request.cookies.get('maintenance_mode')?.value
-  if (maintenance === 'true') {
-    return NextResponse.rewrite(new URL('/maintenance', request.url))
-  }
+  // Create response to forward along
+  let response = NextResponse.next({ request })
 
-  return NextResponse.next()
+  // Create Supabase client for middleware
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll()
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
+          response = NextResponse.next({ request })
+          cookiesToSet.forEach(({ name, value, options }) =>
+            response.cookies.set(name, value, options)
+          )
+        },
+      },
+    }
+  )
+
+  // Refresh session if expired
+  await supabase.auth.getUser()
+
+  return response
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
+  matcher: [
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+  ],
 }

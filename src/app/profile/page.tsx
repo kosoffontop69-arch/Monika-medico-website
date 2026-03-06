@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/components/auth/AuthProvider'
-import { createBrowserSupabaseClient } from '@/lib/supabase-auth'
+import { createBrowserSupabaseClient } from '@/lib/supabase-browser'
 import { User, Phone, Mail, MapPin, Package, LogOut, Edit2, Save, X } from 'lucide-react'
 import Link from 'next/link'
 import toast from 'react-hot-toast'

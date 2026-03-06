@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { Mail, ArrowLeft, CheckCircle } from 'lucide-react'
-import { createBrowserSupabaseClient } from '@/lib/supabase-auth'
+import { createBrowserSupabaseClient } from '@/lib/supabase-browser'
 import toast from 'react-hot-toast'
 
 export default function ForgotPasswordPage() {
